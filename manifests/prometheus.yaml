@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus
+  namespace: argocd
+  # Not using ArgoCD finalizer since it will deadlock if the app is deleted
+  finalizers:
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  destination:
+    namespace: prometheus
+    server: https://kubernetes.default.svc
+  project: infrastructure
+  source:
+    path: prometheus
+    repoURL: https://github.com/npflan/monitoring.git
+    targetRevision: master
