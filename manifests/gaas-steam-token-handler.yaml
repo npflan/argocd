@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gaas-steam-token-handler
+  namespace: argocd
+  # Not using ArgoCD finalizer since it will deadlock if the app is deleted
+  finalizers:
+spec:
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  destination:
+    namespace: gaas-backend
+    server: https://kubernetes.default.svc
+  project: gaas
+  source:
+    path: manifests
+    repoURL: https://github.com/npflan/gaas-steam-token.git
+    targetRevision: master

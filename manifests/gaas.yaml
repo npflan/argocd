@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: gaas
+  namespace: argocd
+spec:
+  description: Containing all gaas services
+  sourceRepos:
+  - "*"
+  destinations:
+  - namespace: gaas-backend
+    server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+  - group: "*"
+    kind: "*"
