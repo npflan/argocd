@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: grafana
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
   # Not using ArgoCD finalizer since it will deadlock if the app is deleted
   finalizers:
 spec:
@@ -19,7 +21,34 @@ spec:
         persistence:
           enabled: true
           size: "20Gi"
+          storageClassName: grafana
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: grafana
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 20Gi
+  local:
+    path: /kube/grafana
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - baptiste
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: grafana
+  volumeMode: Filesystem
