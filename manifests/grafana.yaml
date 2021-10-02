@@ -14,6 +14,11 @@ spec:
     chart: grafana
     repoURL: https://grafana.github.io/helm-charts
     targetRevision: 6.16.10
+    helm:
+      values: |
+        persistence:
+          enabled: true
+          size: "20Gi"
   syncPolicy:
     automated:
       prune: true
