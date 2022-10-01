@@ -1,0 +1,84 @@
+apiVersion: k0sctl.k0sproject.io/v1beta1
+kind: Cluster
+metadata:
+  name: npf-cluster
+spec:
+  hosts:
+  - ssh:
+      address: 172.20.22.11
+      user: npfserver
+      port: 22
+      keyPath: /Users/patricknielsen/.ssh/id_rsa
+    role: controller
+  - ssh:
+      address: 172.20.22.12
+      user: npfserver
+      port: 22
+      keyPath: /Users/patricknielsen/.ssh/id_rsa
+    role: controller
+  - ssh:
+      address: 172.20.22.13
+      user: npfserver
+      port: 22
+      keyPath: /Users/patricknielsen/.ssh/id_rsa
+    role: controller
+
+  - ssh:
+      address: 172.20.22.103
+      user: npfserver
+      port: 22
+      keyPath: /Users/patricknielsen/.ssh/id_rsa
+    role: worker
+  - ssh:
+      address: 172.20.22.104
+      user: npfserver
+      port: 22
+      keyPath: /Users/patricknielsen/.ssh/id_rsa
+    role: worker
+  - ssh:
+      address: 172.20.22.105
+      user: npfserver
+      port: 22
+      keyPath: /Users/patricknielsen/.ssh/id_rsa
+    role: worker
+
+  k0s:
+    version: 1.25.2+k0s.0
+    dynamicConfig: false
+    config:
+      apiVersion: k0s.k0sproject.io/v1beta1
+      kind: Cluster
+      metadata:
+        name: npf-cluster
+      spec:
+        api:
+          k0sApiPort: 9443
+          port: 6443
+        installConfig:
+          users:
+            etcdUser: etcd
+            kineUser: kube-apiserver
+            konnectivityUser: konnectivity-server
+            kubeAPIserverUser: kube-apiserver
+            kubeSchedulerUser: kube-scheduler
+        konnectivity:
+          adminPort: 8133
+          agentPort: 8132
+        network:
+          kubeProxy:
+            disabled: false
+            mode: iptables
+          kuberouter:
+            autoMTU: true
+            mtu: 0
+            peerRouterASNs: "65000,65000"
+            peerRouterIPs: "172.20.22.253,172.20.22.254"
+          podCIDR: 10.90.0.0/16
+          provider: kuberouter
+          serviceCIDR: 10.96.0.0/14
+        podSecurityPolicy:
+          defaultPolicy: 00-k0s-privileged
+        storage:
+          type: etcd
+        telemetry:
+          enabled: true
